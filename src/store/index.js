@@ -1,7 +1,9 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import auth from "./auth";
-import info from "./info";
+import Vue from 'vue';
+import Vuex from 'vuex';
+import auth from './auth';
+import info from './info';
+import category from './category';
+import record from './record';
 
 Vue.use(Vuex);
 
@@ -18,11 +20,22 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    error: (s) => s.error,
+    error: s => s.error,
   },
-  actions: {},
+  actions: {
+    async fetchCurrency() {
+      const key = process.env.VUE_APP_CF;
+      const res = await fetch(
+        `https://api.currencyfreaks.com/latest?apikey=${key}&symbols=CNY,EUR,USD`
+      );
+      // console.log(await res.json());
+      return await res.json();
+    },
+  },
   modules: {
     auth,
     info,
+    category,
+    record,
   },
 });

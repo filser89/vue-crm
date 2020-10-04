@@ -1,4 +1,4 @@
-import firebase from "firebase/app";
+import firebase from 'firebase/app';
 
 export default {
   actions: {
@@ -8,7 +8,7 @@ export default {
       try {
         await firebase.auth().signInWithEmailAndPassword(email, password);
       } catch (e) {
-        commit("setError", e);
+        commit('setError', e);
         throw e;
       }
     },
@@ -16,18 +16,19 @@ export default {
       // eslint-disable-next-line
       try {
         await firebase.auth().createUserWithEmailAndPassword(email, password);
-        const uid = await dispatch("getUid");
+        const uid = await dispatch('getUid');
         await firebase
           .database()
           .ref(`/users/${uid}`)
           .set({
             info: {
-              bill: 0,
+              account: 10000,
+              locale: 'en-US',
               name,
             },
           });
       } catch (e) {
-        commit("setError", e);
+        commit('setError', e);
         throw e;
       }
     },
@@ -37,7 +38,7 @@ export default {
     },
     async logout({ commit }) {
       await firebase.auth().signOut();
-      commit("clearInfo");
+      commit('clearInfo');
     },
   },
 };

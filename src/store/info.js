@@ -23,14 +23,26 @@ export default {
         ).val();
         commit("setInfo", info);
       } catch (e) {
-        console.log("ERROR:", e);
+        commit("setError", e);
+        throw e;
+      }
+    },
+    async updateInfo({ dispatch, commit, getters }, toUpdate) {
+      try {
+        const uid = await dispatch("getUid");
+        const updateData = { ...getters.info, ...toUpdate };
+        await firebase
+          .database()
+          .ref(`/users/${uid}/info`)
+          .update(toUpdate);
+        commit("setInfo", updateData);
+      } catch (e) {
+        commit("setError", e);
+        throw e;
       }
     },
   },
   getters: {
-    info: (s) => {
-      console.log("inside info getter", s);
-      return s.info;
-    },
+    info: (s) => s.info,
   },
 };

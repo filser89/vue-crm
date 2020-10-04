@@ -1,70 +1,58 @@
 <template>
   <div>
     <div class="page-title">
-      <h3>Категории</h3>
+      <h3>{{ 'CategoriesTitle' | localize }}</h3>
     </div>
     <section>
-      <div class="row">
-        <div class="col s12 m6">
-          <div>
-            <div class="page-subtitle">
-              <h4>Создать</h4>
-            </div>
-
-            <form>
-              <div class="input-field">
-                <input id="name" type="text" />
-                <label for="name">Название</label>
-                <span class="helper-text invalid">Введите название</span>
-              </div>
-
-              <div class="input-field">
-                <input id="limit" type="number" />
-                <label for="limit">Лимит</label>
-                <span class="helper-text invalid">Минимальная величина</span>
-              </div>
-
-              <button class="btn waves-effect waves-light" type="submit">
-                Создать
-                <i class="material-icons right">send</i>
-              </button>
-            </form>
-          </div>
-        </div>
-        <div class="col s12 m6">
-          <div>
-            <div class="page-subtitle">
-              <h4>Редактировать</h4>
-            </div>
-
-            <form>
-              <div class="input-field">
-                <select>
-                  <option>Category</option>
-                </select>
-                <label>Выберите категорию</label>
-              </div>
-
-              <div class="input-field">
-                <input type="text" id="name" />
-                <label for="name">Название</label>
-                <span class="helper-text invalid">TITLE</span>
-              </div>
-
-              <div class="input-field">
-                <input id="limit" type="number" />
-                <label for="limit">Лимит</label>
-                <span class="helper-text invalid">LIMIT</span>
-              </div>
-
-              <button class="btn waves-effect waves-light" type="submit">
-                Обновить
-                <i class="material-icons right">send</i>
-              </button>
-            </form>
-          </div>
-        </div>
+      <Loader v-if="loading" />
+      <div class="row" v-else>
+        <CategoriesCreate @created="addNewCategory" />
+        <CategoriesEdit
+          v-if="categories.length"
+          :categories="categories"
+          @updated="updateCategories"
+          :key="categories.length + counter"
+        />
+        <p v-else class="center">You have no Categories</p>
       </div>
     </section>
   </div>
 </template>
+
+<script>
+import CategoriesCreate from '@/components/CategoriesCreate';
+import CategoriesEdit from '@/components/CategoriesEdit';
+
+export default {
+  metaInfo() {
+    return {
+      title: this.$title('CategoriesTitle'),
+    };
+  },
+  name: 'categories',
+  data: () => ({
+    categories: [],
+    loading: true,
+    counter: 0,
+  }),
+  async mounted() {
+    this.categories = await this.$store.dispatch('fetchCategories');
+    this.loading = false;
+  },
+  components: {
+    CategoriesCreate,
+    CategoriesEdit,
+  },
+  methods: {
+    addNewCategory(category) {
+      this.categories.push(category);
+    },
+    updateCategories(categoryData) {
+      const idx = this.categories.findIndex(c => c.id === categoryData.id);
+      this.categories[idx].title = categoryData.title;
+      this.categories[idx].limit = categoryData.limit;
+      this.counter++;
+    },
+  },
+};
+</script>

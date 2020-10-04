@@ -13,7 +13,7 @@ export default {
   },
   watch: {
     error(fbError) {
-      this.$error(fbError.message) || "Something went wrong";
+      this.$error(fbError.message);
     },
   },
 };
